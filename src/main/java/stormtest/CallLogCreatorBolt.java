@@ -21,10 +21,18 @@ public class CallLogCreatorBolt implements IRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
+    	if(tuple.getSourceStreamId().equals("streamone")) {
        String from = tuple.getString(0);
        String to = tuple.getString(1);
        Integer duration = tuple.getInteger(2);
-       collector.emit(new Values(from + " - " + to, duration));
+       collector.emit("streamone", new Values(from + " - " + to, duration));
+    	} else {
+       String from = tuple.getString(0);
+       String to = tuple.getString(1);
+       Integer duration = tuple.getInteger(2);
+       collector.emit("streamtwo", new Values("iqbal" + from + " - " + to, duration));    		
+    	}
+    collector.ack(tuple);
     }
 
     @Override
@@ -32,7 +40,9 @@ public class CallLogCreatorBolt implements IRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-       declarer.declare(new Fields("call", "duration"));
+       //declarer.declare(new Fields("call", "duration"));
+       declarer.declareStream("streamone", new Fields("call", "duration"));
+       declarer.declareStream("streamtwo", new Fields("call", "duration"));
     }
      
     @Override

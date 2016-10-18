@@ -49,14 +49,17 @@ public class FakeCallLogReaderSpout implements IRichSpout {
              }
                  
              Integer duration = randomGenerator.nextInt(60);
-             this.collector.emit(new Values(fromMobileNumber, toMobileNumber, duration));
+             this.collector.emit("streamone", new Values(fromMobileNumber, toMobileNumber, duration), idx.toString());
+             this.collector.emit("streamtwo", new Values(fromMobileNumber, toMobileNumber, duration), idx.toString());
           }
        }
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-       declarer.declare(new Fields("from", "to", "duration"));
+       //declarer.declare(new Fields("from", "to", "duration"));
+       declarer.declareStream("streamone", new Fields("from", "to", "duration"));
+       declarer.declareStream("streamtwo", new Fields("from", "to", "duration"));
     }
 
     //Override all the interface methods
@@ -74,10 +77,14 @@ public class FakeCallLogReaderSpout implements IRichSpout {
     public void deactivate() {}
 
     @Override
-    public void ack(Object msgId) {}
+    public void ack(Object msgId) {
+    	System.out.println("Asif acked " + msgId.toString());
+    }
 
     @Override
-    public void fail(Object msgId) {}
+    public void fail(Object msgId) {
+    	System.out.println("Asif failed " + msgId.toString());
+    }
 
     @Override
     public Map<String, Object> getComponentConfiguration() {

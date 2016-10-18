@@ -17,14 +17,16 @@ public class LogAnalyserStorm {
         builder.setSpout("call-log-reader-spout", new FakeCallLogReaderSpout());
 
         builder.setBolt("call-log-creator-bolt", new CallLogCreatorBolt())
-           .shuffleGrouping("call-log-reader-spout");
+           .shuffleGrouping("call-log-reader-spout", "streamone")
+           .shuffleGrouping("call-log-reader-spout", "streamtwo");
 
         builder.setBolt("call-log-counter-bolt", new CallLogCounterBolt())
-           .fieldsGrouping("call-log-creator-bolt", new Fields("call"));
+           .fieldsGrouping("call-log-creator-bolt", "streamone", new Fields("call"))
+           .fieldsGrouping("call-log-creator-bolt", "streamtwo", new Fields("call"));
               
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology("LogAnalyserStorm", config, builder.createTopology());
-        Utils.sleep(10000);
+        Utils.sleep(30000);
           
         //Stop the topology
         cluster.killTopology("LogAnalyserStorm");

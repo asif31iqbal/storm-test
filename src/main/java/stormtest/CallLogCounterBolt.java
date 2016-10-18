@@ -25,18 +25,33 @@ public class CallLogCounterBolt implements IRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-       String call = tuple.getString(0);
-       Integer duration = tuple.getInteger(1);
-         
-       if(!counterMap.containsKey(call)){
-          counterMap.put(call, 1);
-          durationMap.put(call, (long)duration);
-       }else{
-          Integer c = counterMap.get(call) + 1;
-          counterMap.put(call, c);
-          Long d = durationMap.get(call) + duration;
-          durationMap.put(call, d);
-       }
+    	if(tuple.getSourceStreamId().equals("streamone")) {
+    		   String call = tuple.getString(0);
+    	       Integer duration = tuple.getInteger(1);
+    	         
+    	       if(!counterMap.containsKey(call)){
+    	          counterMap.put(call, 1);
+    	          durationMap.put(call, (long)duration);
+    	       }else{
+    	          Integer c = counterMap.get(call) + 1;
+    	          counterMap.put(call, c);
+    	          Long d = durationMap.get(call) + duration;
+    	          durationMap.put(call, d);
+    	       }
+    	} else {
+    		String call = tuple.getString(0) + "asif";
+ 	       Integer duration = tuple.getInteger(1);
+ 	         
+ 	       if(!counterMap.containsKey(call)){
+ 	          counterMap.put(call, 1);
+ 	          durationMap.put(call, (long)duration);
+ 	       }else{
+ 	          Integer c = counterMap.get(call) + 1;
+ 	          counterMap.put(call, c);
+ 	          Long d = durationMap.get(call) + duration;
+ 	          durationMap.put(call, d);
+ 	       }
+    	}
          
        collector.ack(tuple);
     }
